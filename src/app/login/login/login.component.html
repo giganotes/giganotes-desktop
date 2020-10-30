@@ -1,0 +1,95 @@
+<div class="login-container">
+  <div class="login-box">
+    <img [src]="imgPath" />
+
+    <mat-tab-group style="margin-top: 20px">
+      <mat-tab label="Sign in">
+        <mat-card>
+          <mat-card-content>
+            <div fxLayout="column" fxLayoutAlign="center">
+              <form (ngSubmit)="login()">
+                <mat-form-field class="full-width">
+                  <mat-label>Email</mat-label>
+                  <input matInput placeholder="Email" name="email" [(ngModel)]="signInModel.username" #username="ngModel"
+                    required email>
+                  <mat-icon matSuffix>email</mat-icon>
+
+                  <mat-error *ngIf="!username.valid">
+                    E-mail is required and should be in correct format
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="full-width">
+                  <mat-label>Password</mat-label>
+                  <input matInput type="password" placeholder="Password" name="password" [(ngModel)]="signInModel.password" #password="ngModel"
+                    required minlength="6">
+                  <mat-icon matSuffix>lock</mat-icon>
+
+                  <mat-error *ngIf="!password.valid">
+                    Password is required and should be minimum 6 characters
+                  </mat-error>
+                </mat-form-field>
+
+                <div *ngIf="signInErrorMessage.length > 0" style="color: red;">{{ signInErrorMessage }} </div>
+
+                <button color="primary" mat-raised-button style="margin-top: 20px; width: 100%" type="submit" [disabled]="isLoading"> Log In
+                </button>
+
+                <div fxLayout="row" style="margin-top: 20px">
+                  <a [routerLink]="['/restore-password']">Forgot your password?</a>
+                  <a href="#" style="margin-left: auto;" (click)="doOffline()">Work offline</a>
+                </div>
+              </form>
+            </div>
+          </mat-card-content>
+
+          <mat-card-footer *ngIf="isLoading">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </mat-card-footer>
+
+        </mat-card>
+      </mat-tab>
+
+      <mat-tab label="Register">
+        <mat-card>
+          <mat-card-content>
+            <div fxLayout="column" fxLayoutAlign="center">
+              <form (ngSubmit)="register()">
+                <mat-form-field class="full-width">
+                  <mat-label>Email</mat-label>
+                  <input matInput placeholder="Email" name="email" [(ngModel)]="registerModel.username" #username="ngModel"
+                    required email>
+                  <mat-icon matSuffix>email</mat-icon>
+
+                  <mat-error *ngIf="!username.valid">
+                    E-mail is required and should be in correct format
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="full-width">
+                  <mat-label>Password</mat-label>
+                  <input matInput type="password" placeholder="Password" name="password" [(ngModel)]="registerModel.password" #password="ngModel"
+                    required>
+                  <mat-icon matSuffix>lock</mat-icon>
+
+                  <mat-error *ngIf="!password.valid">
+                    Password is required and should be minimum 6 characters
+                  </mat-error>
+                </mat-form-field>
+
+                <div *ngIf="registerErrorMessage.length > 0" style="color: red;">{{ registerErrorMessage }} </div>
+
+                <button color="primary" mat-raised-button style="margin-top: 20px; width: 100%" type="submit" [disabled]="isLoading"> Register
+                </button>
+              </form>
+            </div>
+          </mat-card-content>
+
+          <mat-card-footer *ngIf="isLoading">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </mat-card-footer>
+        </mat-card>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

@@ -1,0 +1,303 @@
+<div *ngIf="!screenService.isMobile" fxLayout="column" style="width:100%;height:100%">
+  <mat-toolbar color="primary">
+    <mat-toolbar-row>
+      <img [src]="bannerPath" /> <span>GIGANOTES</span>
+      <!-- Filler that pushes the menu button to the end of the toolbar -->
+      <span fxFlex></span>
+
+      <button *ngIf="true" mat-button [matMenuTriggerFor]="menu">
+        <mat-icon>person</mat-icon>
+        <span class="icon-spacer"></span> <span>{{ authService.email }}</span>
+        <span class="icon-spacer"></span>
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item *ngIf="true" (click)="logout()">
+          <span>Logout</span> <span class="icon-spacer"></span>
+          <mat-icon>exit_to_app</mat-icon>
+        </button>
+      </mat-menu>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+  <div class="content" style="overflow:auto; height: 100%;">
+    <div resizable [sizerBarPosition]="2" fxFlex="20" style="height: 100%">
+      <div style="overflow: auto; height: 100%;">
+        <app-navigation-tree
+          [items]="items"
+          [navTreeEventsService]="navTreeEventsService"
+        ></app-navigation-tree>
+      </div>
+    </div>
+
+    <div fxFlex="80" fxLayout="column">
+      <input type="file" #fileInput  (change)="onFileChange($event)" style="display:none" />
+      <div
+        fxLayout="row"
+        style="border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: #cfd8dc"
+      >
+        <button *ngIf="mode != 'fav'" mat-button (click)="onNewNote()">
+          <mat-icon>description</mat-icon>New note
+        </button>
+
+        <button *ngIf="mode == 'folder'" mat-button (click)="onNewFolder()">
+          <mat-icon>folder</mat-icon>New folder
+        </button>
+
+        <button mat-button (click)="doSync()" *ngIf="!isOffline">
+          <mat-icon [ngClass]="{'fa-spin': isSyncing()}">sync</mat-icon>Syncronize
+        </button>
+
+        <span fxFlex></span>
+
+        <button
+          mat-button
+          *ngIf="folderOfSelectedNote != null"
+          (click)="onChangeFolder()"
+        >
+          <mat-icon>folder</mat-icon> {{ folderOfSelectedNote.title }}
+        </button>
+      </div>
+
+      <div fxLayout="row" style="overflow:auto; height:100%;">
+        <div fxFlex="30" resizable [sizerBarPosition]="2">
+          <div fxLayout="column" style="height:100%;">
+            <mat-form-field
+              color="primary"
+              floatLabel="never"
+              style="width: 100%;"
+            >
+              <input
+                #searchHelpPanelContainer
+                matInput
+                [(ngModel)]="searchFilter"
+                #searchInput
+                type="search"
+                placeholder="Search notes..."
+                (keyup)="searchNotesKeyUp($event)"
+              />
+              <button
+                mat-button
+                matSuffix
+                mat-icon-button
+                aria-label="Search notes"
+                (click)="searchNotes()"
+              >
+                <mat-icon>search</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <div style="overflow: auto; height:100%;">
+              <mat-nav-list>
+                <mat-list-item
+                  *ngFor="let note of notes"
+                  (click)="onNoteClick(note)"
+                  [class.list-item-selected]="this.selectedNoteInfo == note"
+                  mwlDraggable [dropData]="note.id" [showOriginalElementWhileDragging]="true"
+                >
+                  <mat-icon matListIcon class="avatar">description</mat-icon>
+                  <span *ngIf="note.title.length > 0">{{ note.title }}</span>
+                  <span *ngIf="note.title.length == 0">Untitled note</span>
+                </mat-list-item>
+              </mat-nav-list>
+            </div>
+          </div>
+        </div>
+
+        <div fxFlex="70">
+          <div fxLayout="column" style="height: 100%; width:100%">
+            <div fxLayout="row">
+              <input
+                #noteTitleInput="matInput"
+                matInput
+                placeholder="Enter note title"
+                [(ngModel)]="selectedNote.title"
+                (keyup)="onNoteTitleKeyUp($event)"
+                (focusout)="onNoteNameInputFocusOut()"
+              />
+
+              <button mat-icon-button (click)="onSaveNote()">
+                <mat-icon>save</mat-icon>
+              </button>
+
+              <button
+                *ngIf="mode != 'fav'"
+                mat-icon-button
+                (click)="onAddToFavorites()"
+              >
+                <mat-icon>favorite</mat-icon>
+              </button>
+
+              <button mat-icon-button (click)="onDeleteNote()">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <button
+                *ngIf="mode != 'fav'"
+                (click)="addImage()"
+              mat-icon-button
+              >
+              <mat-icon>add_a_photo</mat-icon>
+              </button>
+            </div>
+
+             <editor
+              *ngIf="isEditorScriptLoaded"
+              [init]="editorSetup"
+              fxLayout="column"
+              style="height:100%; width:100%"
+              [(ngModel)]="selectedNote.text"
+              (onDblclick)="handleEditorClick($event)"
+            >
+            </editor>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="screenService.isMobile" class="mobile-container">
+  <mat-toolbar color="primary">
+    <mat-toolbar-row>
+      <button
+        *ngIf="mobileShowBackButton"
+        type="button"
+        (click)="onBack()"
+        mat-icon-button
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <button
+        *ngIf="!mobileShowBackButton"
+        mat-icon-button
+        (click)="sidenav.toggle()"
+        fxShow="true"
+        fxHide.gt-sm
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>{{ getMobileTitle() }}</span>
+      <span fxFlex></span>
+
+      <button mat-icon-button (click)="doSync()" *ngIf="!mobileShowBackButton && !authService.isOffline">
+        <mat-icon [ngClass]="{'fa-spin': isSyncing()}">sync</mat-icon>
+      </button>
+
+      <button
+        *ngIf="mobileShowBackButton && mode != 'fav'"
+        mat-icon-button
+        (click)="onAddToFavorites()"
+      >
+        <mat-icon>favorite</mat-icon>
+      </button>
+
+      <button
+        *ngIf="mobileShowBackButton"
+        type="button"
+        (click)="onDeleteNote()"
+        mat-icon-button
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+
+      <button
+        *ngIf="mobileShowBackButton"
+        type="button"
+        (click)="onSaveNoteMobile()"
+        mat-icon-button
+      >
+        <mat-icon>check</mat-icon>
+      </button>
+
+      <button
+      *ngIf="mobileShowBackButton && folderOfSelectedNote != null"
+      (click)="onChangeFolder()"
+      mat-icon-button
+      >
+      <mat-icon>folder</mat-icon>
+      </button>
+
+      <button
+      *ngIf="mobileShowBackButton"
+      (click)="addImage()"
+      mat-icon-button
+      >
+      <mat-icon>add_a_photo</mat-icon>
+      </button>
+
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+  <mat-sidenav-container
+    class="mobile-sidenav-container"
+    style.marginTop.px="'56'"
+  >
+    <mat-sidenav mode="'over'" #sidenav fixedTopGap="56">
+      <app-navigation-tree
+        [items]="items"
+        [navTreeEventsService]="navTreeEventsService"
+      ></app-navigation-tree>
+    </mat-sidenav>
+    <mat-sidenav-content fxFlexFill>
+      <mat-nav-list *ngIf="showMobileList">
+        <mat-list-item
+          *ngFor="let note of notes"
+          (click)="onNoteClick(note)"
+          [class.list-item-selected]="this.selectedNoteInfo == note"
+        >
+          <mat-icon matListIcon class="avatar">description</mat-icon>
+          <span *ngIf="note.title.length > 0">{{ note.title }}</span>
+          <span *ngIf="note.title.length == 0">Untitled note</span>
+        </mat-list-item>
+      </mat-nav-list>
+
+      <div class="fab-container" *ngIf="showMobileList">
+        <button mat-fab class="fab-toggler" (click)="onToggleFab()">
+          <i class="material-icons">add</i>
+        </button>
+        <div>
+          <button
+            *ngIf="showFabButtons && mode == 'folder'"
+            mat-mini-fab
+            class="fab-secondary"
+            color="secondary"
+            (click)="onNewFolder()"
+          >
+            <i class="material-icons">folder</i>
+          </button>
+          <button
+            *ngIf="showFabButtons"
+            mat-mini-fab
+            class="fab-secondary"
+            color="secondary"
+            (click)="onNewNoteMobile()"
+          >
+            <i class="material-icons">description</i>
+          </button>
+        </div>
+      </div>
+
+      <div fxLayout="column" fxFlexFill *ngIf="!showMobileList">
+        <input type="file" #fileInput  (change)="onFileChange($event)" style="display:none" />
+        <input
+        #noteTitleInput="matInput"
+        matInput
+        placeholder="Enter note title"
+        [(ngModel)]="selectedNote.title"
+        (keyup)="onNoteTitleKeyUp($event)"
+        (focusout)="onNoteNameInputFocusOut()"
+      />
+      <editor
+        *ngIf="isEditorScriptLoaded && isSelectedNoteLoaded"
+        [init]="editorSetup"
+        fxLayout="column"
+        style="height:100%; width:100%"
+        [(ngModel)]="selectedNote.text"
+        (onClick)="handleEditorClick($event)"
+      >
+      </editor>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

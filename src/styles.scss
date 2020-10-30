@@ -1,0 +1,32 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+@import '~material-design-icons/iconfont/material-icons.css';
+@import '~roboto-fontface/css/roboto/roboto-fontface.css';
+
+html, body {
+  display: flex;
+  flex-direction: column;
+
+  font-family: Roboto, Arial, sans-serif;
+  margin: 0;
+  height: 100%;
+}
+
+.mce-tinymce, .mce-stack-layout, .mce-edit-area, .flex-use-stretch {
+  display: flex!important;
+  flex-direction: column;
+  flex: 1;
+  align-items: stretch;
+}
+
+.flex-use {
+  display: flex;
+  flex-direction: column;
+}
+
+.mce-tinymce iframe {
+  flex: 1;
+}
+

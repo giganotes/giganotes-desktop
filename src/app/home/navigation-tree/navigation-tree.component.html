@@ -1,0 +1,30 @@
+<mat-list [ngStyle]="{'margin-left': level + 'px'}">
+  <div *ngFor="let item of items">
+    <mat-list-item [class.list-item-selected]="item.isSelected" mwlDroppable (drop)="onDrop($event, item)">
+      <ng-container *ngIf="!item.showMenuButton || !item.isSelected">
+        <mat-menu #appMenu="matMenu">
+          <button mat-menu-item (click)="onAddFolder(item)">Add folder</button>
+          <button mat-menu-item (click)="onRenameFolder(item)">Rename</button>
+          <button mat-menu-item (click)="onDeleteFolder(item)">Delete</button>
+        </mat-menu>
+        <mat-icon matListIcon (click)="onSelectedItemClick(item)">{{item.iconName}}</mat-icon>
+      </ng-container>
+      <ng-container *ngIf="item.showMenuButton && item.isSelected">
+        <mat-menu #appMenu="matMenu">
+          <button mat-menu-item (click)="onAddFolder(item)">Add folder</button>
+          <button mat-menu-item (click)="onRenameFolder(item)">Rename</button>
+          <button mat-menu-item (click)="onDeleteFolder(item)">Delete</button>
+        </mat-menu>
+        <mat-icon matListIcon [matMenuTriggerFor]="appMenu">more_horiz</mat-icon>
+      </ng-container>
+      <span (click)="onSelectedItemClick(item)">{{item.name}}</span>
+      <mat-icon *ngIf="item.subItems?.length > 0" (click)="item.expanded = !item.expanded">{{item.expanded ?
+        'expand_less' : 'expand_more'}}</mat-icon>
+      <span fxFlex></span>
+    </mat-list-item>
+    <app-navigation-tree [items]="item.subItems" [level]="level + 10" [navTreeEventsService]="navTreeEventsService"
+      *ngIf="item.expanded">
+    </app-navigation-tree>
+  </div>
+
+</mat-list>

@@ -1,0 +1,47 @@
+{
+  "productName": "GigaNotes",
+  "directories": {
+    "output": "release/"
+  },
+  "files": [
+    "**/*",
+    "!*.ts",
+    "!*.code-workspace",
+    "!LICENSE.md",
+    "!package.json",
+    "!package-lock.json",
+    "!src/",
+    "!e2e/",
+    "!hooks/",
+    "!.angular-cli.json",
+    "!_config.yml",
+    "!karma.conf.js",
+    "!tsconfig.json",
+    "!tslint.json"
+  ],
+  "appx": {
+    "applicationId": "giganotes",
+    "identityName": "51772ThetaPad.51188E23747D4",
+    "publisher": "CN=4C2CC38F-D0D7-466D-9C14-560626A1F117",
+    "publisherDisplayName": "FourthByte"
+  },
+  "win": {
+    "asarUnpack": "**\\*.node",
+    "icon": "./src/favicon.256x256.png",
+    "target": [
+      "nsis", "appx"
+    ]
+  },
+  "mac": {
+    "icon": "./src/favicon.256x256.png",
+    "target": [
+      "dmg"
+    ]
+  },
+  "linux": {
+    "icon": "./src/favicon.256x256.png",
+    "target": [
+      "AppImage", "deb", "rpm", "snap"
+    ]
+  }
+}

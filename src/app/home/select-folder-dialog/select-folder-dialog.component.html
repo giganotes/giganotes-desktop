@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>Select folder</h2>
+
+<mat-dialog-content>
+  <div style="overflow: auto; width: 400px; height:300px;">
+      <app-navigation-tree [items]="getRootItems()" ></app-navigation-tree>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="mat-raised-button" (click)="close()">Close</button>
+  <button class="mat-raised-button mat-primary" [mat-dialog-close]="selectedItem">Save</button>
+</mat-dialog-actions>
