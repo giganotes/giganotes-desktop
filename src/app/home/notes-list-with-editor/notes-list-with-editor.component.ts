@@ -188,6 +188,8 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       this.isEditorScriptLoaded = true;
     });
 
+    var parent = this;
+
     this.route.params.subscribe(params => {
 
       // Clear search filter when opening a route
@@ -197,36 +199,37 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       this.prevFolderId = this.folderId;
       this.prevNoteId = this.noteId;
 
-      switch (params.mode) {
-        case "all":
-          this.mode = "all";
-          this.noteId = params.noteId;
-          break;
-        case "fav":
-          this.mode = "fav";
-          break;
-        case "folder":
-          this.mode = "folder";
-          this.folderId = params.folderId;
-          this.noteId = params.noteId;
-          break;
-        default:
-          this.mode = "all";
-          this.noteId = null;
-      }
+      parent.saveCurrentNote().then(() => {
+        switch (params.mode) {
+          case "all":
+            this.mode = "all";
+            this.noteId = params.noteId;
+            break;
+          case "fav":
+            this.mode = "fav";
+            break;
+          case "folder":
+            this.mode = "folder";
+            this.folderId = params.folderId;
+            this.noteId = params.noteId;
+            break;
+          default:
+            this.mode = "all";
+            this.noteId = null;
+        }
 
-      if (this.screenService.isMobile) {
-        this.showMobileList = this.noteId == null;
-        this.mobileShowBackButton = !this.showMobileList;
-      }
+        if (this.screenService.isMobile) {
+          this.showMobileList = this.noteId == null;
+          this.mobileShowBackButton = !this.showMobileList;
+        }
 
-      // If we are in note editing mode, flush note load status flag
-      if (this.noteId != null) {
-        this.isSelectedNoteLoaded = false;
-      }
+        // If we are in note editing mode, flush note load status flag
+        if (this.noteId != null) {
+          this.isSelectedNoteLoaded = false;
+        }
 
-      this.loadData();
-      console.log('here');
+        this.loadData();
+      });
     });
 
     if (this.screenService.isMobile) {
@@ -526,15 +529,26 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     });
   }
 
+  async saveCurrentNote() {
+    if (this.selectedNote == null || this.selectedNote.id.length == 0) {
+      return;
+    }
+
+    const noteInDb = await this.noteService.loadNoteById(this.selectedNote.id);
+    const newContent = this.noteEditor.getContent();
+    if (noteInDb.text !== newContent || this.selectedNote.title !== noteInDb.title) {
+      this.selectedNote.text = newContent;
+      this.selectedNote.updatedAt = new Date();
+      this.noteService.updateNote(this.selectedNote);
+    }
+  }
+
   onSaveNote() {
     if (this.selectedNote == null) {
       return;
     }
 
-    this.selectedNote.text = this.noteEditor.getContent();
-
-    this.selectedNote.updatedAt = new Date();
-    this.noteService.updateNote(this.selectedNote);
+    this.saveCurrentNote();
 
     const index = this.notes.findIndex(o => o === this.selectedNoteInfo);
     this.notes.splice(index, 1);
