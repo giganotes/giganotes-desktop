@@ -92,7 +92,7 @@
                 <mat-list-item
                   *ngFor="let note of notes"
                   (click)="onNoteClick(note)"
-                  [class.list-item-selected]="this.selectedNoteInfo == note"
+                  [class.list-item-selected]="this.selectedNoteInfo.id == note.id"
                   mwlDraggable [dropData]="note.id" [showOriginalElementWhileDragging]="true"
                 >
                   <mat-icon matListIcon class="avatar">description</mat-icon>
