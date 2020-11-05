@@ -86,7 +86,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     deletedAt: new Date()
   };
 
-  lastLoadedNoteInfo: Note;
   currentFolder: Folder;
   noteEditor: any;
   editorSetup: any;
@@ -322,7 +321,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   async loadListItems() {
 
     // Reset the last loaded note information
-    this.lastLoadedNoteInfo = null;
+    this.selectedNoteInfo.id = "";
 
     switch (this.mode) {
       case "all":
@@ -449,7 +448,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   async loadSelectedNoteById(id: string) {
     this.selectedNote = await this.noteService.loadNoteById(id);
     this.isSelectedNoteLoaded = true;
-    this.lastLoadedNoteInfo = this.selectedNote;
+    this.selectedNoteInfo = this.selectedNote;
   }
 
   async loadNotes(folderId: string) {
@@ -498,7 +497,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     );
     this.notes.splice(0, 0, this.selectedNote);
     this.selectedNoteInfo = this.notes[0];
-    this.lastLoadedNoteInfo = this.selectedNoteInfo;
     this.noteTitleInput.focus();
   }
 
@@ -518,7 +516,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
     this.notes.splice(0, 0, this.selectedNote);
     this.selectedNoteInfo = this.notes[0];
-    this.lastLoadedNoteInfo = this.selectedNoteInfo;
     this.newNoteMobileCreationStarted = true;
     this.router.navigate(['/home', { mode: this.mode, folderId: this.selectedNote.folderId, noteId: this.selectedNote.id }]);
   }
@@ -536,19 +533,19 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   async saveCurrentNote() {
-    if (this.lastLoadedNoteInfo == null) {
+    if (this.selectedNoteInfo.id.length == 0) {
       return;
     }
 
-    const noteInDb = await this.noteService.loadNoteById(this.lastLoadedNoteInfo.id);
+    const noteInDb = await this.noteService.loadNoteById(this.selectedNoteInfo.id);
     const newContent = this.noteEditor.getContent();
-    if (noteInDb.text !== newContent || this.lastLoadedNoteInfo.title !== noteInDb.title) {
+    if (noteInDb.text !== newContent || this.selectedNoteInfo.title !== noteInDb.title) {
       const updatedNote: Note = {
-        id: this.lastLoadedNoteInfo.id,
-        title: this.lastLoadedNoteInfo.title,
+        id: this.selectedNoteInfo.id,
+        title: this.selectedNoteInfo.title,
         text: newContent,
-        folderId: this.lastLoadedNoteInfo.folderId,
-        level: this.lastLoadedNoteInfo.level,
+        folderId: this.selectedNoteInfo.folderId,
+        level: this.selectedNoteInfo.level,
         createdAt: new Date(),
         updatedAt: new Date(),
         userId: 0,
