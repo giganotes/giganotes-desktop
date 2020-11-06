@@ -7,7 +7,6 @@ function initIpc() {
     initAuthServiceIpc();
     var emitter = new core.MyEventEmitter();
     initSyncServiceIpc(emitter);
-    initStorageIpc();
     initNoteServiceRpc();
     core.initLogging();
     electron_1.ipcMain.on('init-core-request', function (event, arg) {
@@ -43,15 +42,6 @@ function initAuthServiceIpc() {
         var hasValidToken = {};
         event.sender.send('auth-service-hasvalidtoken-reply', hasValidToken);
     });
-    electron_1.ipcMain.on('auth-service-isoffline-request', function (event, arg) {
-        event.sender.send('auth-service-isoffline-reply', {});
-    });
-    electron_1.ipcMain.on('auth-service-email-request', function (event, arg) {
-        event.sender.send('auth-service-email-reply', {});
-    });
-    electron_1.ipcMain.on('auth-service-logintype-request', function (event, arg) {
-        event.sender.send('auth-service-logintype-reply', {});
-    });
 }
 function initSyncServiceIpc(emitter) {
     var sender = null;
@@ -62,21 +52,6 @@ function initSyncServiceIpc(emitter) {
     emitter.on('coreEvent', function (data) {
         console.log('Sync finished event received');
         sender.send('sync-service-sync-reply', {});
-    });
-}
-function initStorageIpc() {
-    electron_1.ipcMain.on('storage-get-request', function (event, arg) {
-        var value = {};
-        event.sender.send('storage-get-reply', value);
-    });
-    electron_1.ipcMain.on('storage-set-request', function (event, arg) {
-        event.sender.send('storage-set-reply', null);
-    });
-    electron_1.ipcMain.on('storage-remove-request', function (event, arg) {
-        event.sender.send('storage-remove-reply', null);
-    });
-    electron_1.ipcMain.on('storage-clear-request', function (event, arg) {
-        event.sender.send('storage-clear-reply', null);
     });
 }
 function initNoteServiceRpc() {
@@ -147,6 +122,18 @@ function initNoteServiceRpc() {
     electron_1.ipcMain.on('note-manager-service-updatenote-request', function (event, arg) {
         var res = core.updateNoteSerialized(arg['id'], arg['folderId'], arg['title'], arg['text']);
         event.sender.send('note-manager-service-updatenote-reply', new Uint8Array(res));
+    });
+    electron_1.ipcMain.on('note-manager-service-addtofavorites-request', function (event, arg) {
+        var res = core.addToFavoritesSerialized(arg['id']);
+        event.sender.send('note-manager-service-addtofavorites-reply', new Uint8Array(res));
+    });
+    electron_1.ipcMain.on('note-manager-service-removefromfavorites-request', function (event, arg) {
+        var res = core.removeFromFavoritesSerialized(arg['id']);
+        event.sender.send('note-manager-service-removefromfavorites-reply', new Uint8Array(res));
+    });
+    electron_1.ipcMain.on('note-manager-service-getfavorites-request', function (event, arg) {
+        var res = core.getFavoritesSerialized();
+        event.sender.send('note-manager-service-getfavorites-reply', new Uint8Array(res));
     });
 }
 //# sourceMappingURL=ipc-server.js.map

@@ -269,12 +269,52 @@ export class NoteManagerService {
    }
 
     async getFavoriteNotes(): Promise<Note[]> {
-        return new Array<Note>();
+      const parent = this;
+      const promise = new Promise<Note[]>(function (resolve, reject) {
+        ipcRenderer.once('note-manager-service-getfavorites-reply', (event, arg) => {
+          var props = GetNotesListResponse.deserializeBinary(arg).toObject() as GetNotesListResponse.AsObject;
+          var notes = props.notesList.map((n: NoteShortInfo.AsObject) => {
+              const note : Note = {
+                id: n.id,
+                title: n.title,
+                text: "",
+                folderId: n.folderid,
+                level: 0,
+                createdAt: new Date(n.createdat),
+                updatedAt: new Date(n.updatedat),
+                userId: 0,
+                deletedAt: null
+              };
+              return note;
+          });
+          resolve(notes);
+        });
+      });
+
+      ipcRenderer.send('note-manager-service-getfavorites-request', null);
+      return promise;
+
     }
 
     async addToFavorites(noteId: string) {
+      const promise = new Promise<void>(function (resolve, reject) {
+        ipcRenderer.once('note-manager-service-addtofavorites-reply', (event, arg) => {
+            resolve();
+        });
+      });
+
+      ipcRenderer.send('note-manager-service-addtofavorites-request', {id : noteId});
+      return promise;
     }
 
     async removeFromFavorites(noteId: string) {
+      const promise = new Promise<void>(function (resolve, reject) {
+        ipcRenderer.once('note-manager-service-removefromfavorites-reply', (event, arg) => {
+            resolve();
+        });
+      });
+
+      ipcRenderer.send('note-manager-service-removefromfavorites-request', {id : noteId});
+      return promise;
     }
 }

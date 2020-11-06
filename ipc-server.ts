@@ -7,7 +7,6 @@ export function initIpc() {
   const emitter = new core.MyEventEmitter();
 
   initSyncServiceIpc(emitter);
-  initStorageIpc();
   initNoteServiceRpc();
 
   core.initLogging();
@@ -56,18 +55,6 @@ function initAuthServiceIpc() {
     var hasValidToken = {};
         event.sender.send('auth-service-hasvalidtoken-reply', hasValidToken);
   });
-
-  ipcMain.on('auth-service-isoffline-request', (event, arg) => {
-      event.sender.send('auth-service-isoffline-reply', {});
-  });
-
-  ipcMain.on('auth-service-email-request', (event, arg) => {
-    event.sender.send('auth-service-email-reply', {});
-  });
-
-  ipcMain.on('auth-service-logintype-request', (event, arg) => {
-    event.sender.send('auth-service-logintype-reply', {});
-});
 }
 
 function initSyncServiceIpc(emitter) {
@@ -81,30 +68,6 @@ function initSyncServiceIpc(emitter) {
       console.log('Sync finished event received');
       sender.send('sync-service-sync-reply', {});
     });
-}
-
-function initStorageIpc() {
-  ipcMain.on('storage-get-request', (event, arg) => {
-    var value = {};
-          event.sender.send('storage-get-reply', value);
-  });
-
-  ipcMain.on('storage-set-request', (event, arg) => {
-
-      event.sender.send('storage-set-reply', null);
-
-  });
-
-  ipcMain.on('storage-remove-request', (event, arg) => {
-
-      event.sender.send('storage-remove-reply', null);
-
-  });
-
-  ipcMain.on('storage-clear-request', (event, arg) => {
-
-      event.sender.send('storage-clear-reply', null);
-  });
 }
 
 function initNoteServiceRpc() {
@@ -195,5 +158,20 @@ function initNoteServiceRpc() {
   ipcMain.on('note-manager-service-updatenote-request', (event, arg) => {
     var res = core.updateNoteSerialized(arg['id'], arg['folderId'], arg['title'], arg['text'])
     event.sender.send('note-manager-service-updatenote-reply', new Uint8Array(res));
+  });
+
+  ipcMain.on('note-manager-service-addtofavorites-request', (event, arg) => {
+    var res = core.addToFavoritesSerialized(arg['id'])
+    event.sender.send('note-manager-service-addtofavorites-reply', new Uint8Array(res));
+  });
+
+  ipcMain.on('note-manager-service-removefromfavorites-request', (event, arg) => {
+    var res = core.removeFromFavoritesSerialized(arg['id'])
+    event.sender.send('note-manager-service-removefromfavorites-reply', new Uint8Array(res));
+  });
+
+  ipcMain.on('note-manager-service-getfavorites-request', (event, arg) => {
+    var res = core.getFavoritesSerialized();
+    event.sender.send('note-manager-service-getfavorites-reply', new Uint8Array(res));
   });
 }

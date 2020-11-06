@@ -739,3 +739,43 @@ export namespace UpdateNote {
   }
 }
 
+export class AddToFavorites extends jspb.Message {
+  getNoteid(): string;
+  setNoteid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AddToFavorites.AsObject;
+  static toObject(includeInstance: boolean, msg: AddToFavorites): AddToFavorites.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AddToFavorites, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AddToFavorites;
+  static deserializeBinaryFromReader(message: AddToFavorites, reader: jspb.BinaryReader): AddToFavorites;
+}
+
+export namespace AddToFavorites {
+  export type AsObject = {
+    noteid: string,
+  }
+}
+
+export class RemoveFromFavorites extends jspb.Message {
+  getNoteid(): string;
+  setNoteid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): RemoveFromFavorites.AsObject;
+  static toObject(includeInstance: boolean, msg: RemoveFromFavorites): RemoveFromFavorites.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: RemoveFromFavorites, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): RemoveFromFavorites;
+  static deserializeBinaryFromReader(message: RemoveFromFavorites, reader: jspb.BinaryReader): RemoveFromFavorites;
+}
+
+export namespace RemoveFromFavorites {
+  export type AsObject = {
+    noteid: string,
+  }
+}
+
