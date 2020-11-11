@@ -22,7 +22,7 @@
 
 ![Giganotes](/docs/giganotes-desktop-diagram.png)
 
-GigaNotes is an [Electron](https://electronjs.com) application that is using [native core component](https://github.com/FourthByteLabs/giganotes-core) written in [Rust](https://www.rust-lang.org/) system programming language for faster data processing.
+GigaNotes is an [Electron](https://electronjs.com) application that is using [native core component](https://github.com/giganotes/giganotes-core) written in [Rust](https://www.rust-lang.org/) system programming language for faster data processing.
 Applying native code instead of javascript allows us to reach essential performance boost, especially for data synchronization and another tasks like advanced document analysis, link extraction and many others.
 
 Backend API server provides the ability of data dynchronization and some extra features like optical character recognition in images.
