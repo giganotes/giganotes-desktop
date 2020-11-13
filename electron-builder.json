@@ -39,7 +39,7 @@
     ]
   },
   "linux": {
-    "icon": "./src/favicon.256x256.png",
+    "icon": "./icons/",
     "target": [
       "AppImage", "deb", "rpm", "snap"
     ]
