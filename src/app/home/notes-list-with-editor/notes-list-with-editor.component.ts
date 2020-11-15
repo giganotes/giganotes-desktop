@@ -562,13 +562,13 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
     this.saveCurrentNote();
 
-    const index = this.notes.findIndex(o => o === this.selectedNoteInfo);
+    const index = this.notes.findIndex(o => o.id === this.selectedNoteInfo.id);
     this.notes.splice(index, 1);
     this.notes.splice(0, 0, this.selectedNoteInfo);
   }
 
   async deleteSelectedNote() {
-    const index = this.notes.findIndex(o => o === this.selectedNoteInfo);
+    const index = this.notes.findIndex(o => o.id === this.selectedNoteInfo.id);
     this.notes.splice(index, 1);
     await this.noteService.removeNote(this.selectedNoteInfo.id);
 
