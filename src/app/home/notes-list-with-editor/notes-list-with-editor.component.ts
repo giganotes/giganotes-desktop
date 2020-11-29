@@ -207,6 +207,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
             break;
           case "fav":
             this.mode = "fav";
+            this.noteId = params.noteId;
             break;
           case "folder":
             this.mode = "folder";
@@ -429,7 +430,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
   async loadFavorites() {
     this.notes = await this.noteService.getFavoriteNotes();
-    this.selectFirstNote();
+    await this.loadSpecificOrFirstNote();
   }
 
   async loadSpecificOrFirstNote() {
