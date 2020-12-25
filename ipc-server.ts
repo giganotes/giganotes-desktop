@@ -41,9 +41,8 @@ function initAuthServiceIpc() {
   });
 
   ipcMain.on('auth-service-logout-request', (event, arg) => {
-
-        event.sender.send('auth-service-logout-reply', {});
-
+      var logoutResult = core.makeLogoutSerialized();
+      event.sender.send('auth-service-logout-reply', {});
   });
 
   ipcMain.on('auth-service-register-request', (event, arg) => {
