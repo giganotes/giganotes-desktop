@@ -32,6 +32,7 @@ function initAuthServiceIpc() {
         event.sender.send('auth-service-loginoffline-reply', {});
     });
     electron_1.ipcMain.on('auth-service-logout-request', function (event, arg) {
+        var logoutResult = core.makeLogoutSerialized();
         event.sender.send('auth-service-logout-reply', {});
     });
     electron_1.ipcMain.on('auth-service-register-request', function (event, arg) {

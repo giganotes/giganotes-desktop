@@ -4418,7 +4418,8 @@ proto.gigamessages.GetLastLoginDataResponse.toObject = function(includeInstance,
     errorcode: jspb.Message.getFieldWithDefault(msg, 2, 0),
     token: jspb.Message.getFieldWithDefault(msg, 3, ""),
     userid: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    email: jspb.Message.getFieldWithDefault(msg, 5, "")
+    email: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    istokenvalid: jspb.Message.getFieldWithDefault(msg, 6, false)
   };
 
   if (includeInstance) {
@@ -4474,6 +4475,10 @@ proto.gigamessages.GetLastLoginDataResponse.deserializeBinaryFromReader = functi
     case 5:
       var value = /** @type {string} */ (reader.readString());
       msg.setEmail(value);
+      break;
+    case 6:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIstokenvalid(value);
       break;
     default:
       reader.skipField();
@@ -4536,6 +4541,13 @@ proto.gigamessages.GetLastLoginDataResponse.serializeBinaryToWriter = function(m
   if (f.length > 0) {
     writer.writeString(
       5,
+      f
+    );
+  }
+  f = message.getIstokenvalid();
+  if (f) {
+    writer.writeBool(
+      6,
       f
     );
   }
@@ -4616,6 +4628,23 @@ proto.gigamessages.GetLastLoginDataResponse.prototype.getEmail = function() {
 /** @param {string} value */
 proto.gigamessages.GetLastLoginDataResponse.prototype.setEmail = function(value) {
   jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional bool isTokenValid = 6;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.gigamessages.GetLastLoginDataResponse.prototype.getIstokenvalid = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 6, false));
+};
+
+
+/** @param {boolean} value */
+proto.gigamessages.GetLastLoginDataResponse.prototype.setIstokenvalid = function(value) {
+  jspb.Message.setProto3BooleanField(this, 6, value);
 };
 
 
