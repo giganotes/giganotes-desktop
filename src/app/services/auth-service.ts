@@ -18,7 +18,8 @@ export class AuthService {
           var result : LastLoginData = {
             token : resp.token,
             email : resp.email,
-            userId : resp.userid
+            userId : resp.userid,
+            isTokenValid : resp.istokenvalid,
           };
           resolve(result);
       });
@@ -37,7 +38,7 @@ export class AuthService {
     const lastLoginData = await this.getLastLoginData()
     this.email = lastLoginData.email;
     this.userId = lastLoginData.userId;
-    return lastLoginData.token.length > 0;
+    return lastLoginData.isTokenValid;
   }
 
   async login(email: string, password : string): Promise<AuthResponse> {

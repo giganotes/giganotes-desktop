@@ -631,6 +631,9 @@ export class GetLastLoginDataResponse extends jspb.Message {
   getEmail(): string;
   setEmail(value: string): void;
 
+  getIstokenvalid(): boolean;
+  setIstokenvalid(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetLastLoginDataResponse.AsObject;
   static toObject(includeInstance: boolean, msg: GetLastLoginDataResponse): GetLastLoginDataResponse.AsObject;
@@ -648,6 +651,7 @@ export namespace GetLastLoginDataResponse {
     token: string,
     userid: number,
     email: string,
+    istokenvalid: boolean,
   }
 }
 
