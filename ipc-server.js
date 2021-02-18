@@ -25,8 +25,8 @@ function initAuthServiceIpc() {
         event.sender.send('auth-service-login-reply', new Uint8Array(loginResult));
     });
     electron_1.ipcMain.on('auth-service-loginsocial-request', function (event, arg) {
-        var authResponse = {};
-        event.sender.send('auth-service-loginsocial-reply', authResponse);
+        var loginResult = core.makeLoginSocialSerialized(arg['email'], arg['provider'], arg['token']);
+        event.sender.send('auth-service-loginsocial-reply', new Uint8Array(loginResult));
     });
     electron_1.ipcMain.on('auth-service-loginoffline-request', function (event, arg) {
         event.sender.send('auth-service-loginoffline-reply', {});

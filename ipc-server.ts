@@ -30,9 +30,8 @@ function initAuthServiceIpc() {
   });
 
   ipcMain.on('auth-service-loginsocial-request', (event, arg) => {
-      var authResponse = {};
-        event.sender.send('auth-service-loginsocial-reply', authResponse);
-
+    var loginResult = core.makeLoginSocialSerialized(arg['email'], arg['provider'], arg['token']);
+    event.sender.send('auth-service-loginsocial-reply', new Uint8Array(loginResult));
   });
 
   ipcMain.on('auth-service-loginoffline-request', (event, arg) => {

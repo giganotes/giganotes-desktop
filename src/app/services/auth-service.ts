@@ -60,7 +60,12 @@ export class AuthService {
   async loginSocial(values: any): Promise<AuthResponse> {
     const promise = new Promise<AuthResponse>(function (resolve, reject) {
       ipcRenderer.once('auth-service-loginsocial-reply', (event, arg) => {
-          resolve(arg);
+        var loginResponse = LoginResponse.deserializeBinary(arg).toObject();
+        var result: AuthResponse = {
+          success: loginResponse.success,
+          errorCode: loginResponse.errorcode,
+        }
+        resolve(result);
       });
     });
 

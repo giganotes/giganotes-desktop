@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen, Menu } from 'electron';
+import { app, BrowserWindow, screen, session, Menu } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import { initIpc } from './ipc-server';
@@ -36,6 +36,11 @@ function createWindow(): BrowserWindow {
       allowRunningInsecureContent: (serve) ? true : false
     },
   });
+
+  session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+    details.requestHeaders['User-Agent'] = 'Giganotes';
+    callback({ cancel: false, requestHeaders: details.requestHeaders });
+  })
 
   if (serve) {
 
