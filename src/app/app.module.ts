@@ -47,7 +47,7 @@ export function provideSocialConfig(http: HttpClient) {
   return new AuthServiceConfig([
     {
       id: GoogleLoginProvider.PROVIDER_ID,
-      provider: new GoogleLoginProvider(http, "991995282025-4159nc4q0l83fkapl4j3qav55asa38g6.apps.googleusercontent.com")
+      provider: new GoogleLoginProvider(http, "991995282025-dvjgb12io5b435cfbvjb074ma1jvb54g.apps.googleusercontent.com")
     },
   ]);
 }
