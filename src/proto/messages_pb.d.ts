@@ -51,6 +51,34 @@ export namespace Login {
   }
 }
 
+export class LoginSocial extends jspb.Message {
+  getEmail(): string;
+  setEmail(value: string): void;
+
+  getProvider(): string;
+  setProvider(value: string): void;
+
+  getToken(): string;
+  setToken(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): LoginSocial.AsObject;
+  static toObject(includeInstance: boolean, msg: LoginSocial): LoginSocial.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: LoginSocial, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LoginSocial;
+  static deserializeBinaryFromReader(message: LoginSocial, reader: jspb.BinaryReader): LoginSocial;
+}
+
+export namespace LoginSocial {
+  export type AsObject = {
+    email: string,
+    provider: string,
+    token: string,
+  }
+}
+
 export class LoginResponse extends jspb.Message {
   getSuccess(): boolean;
   setSuccess(value: boolean): void;
