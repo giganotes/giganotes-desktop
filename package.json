@@ -1,10 +1,10 @@
 {
   "name": "giganotes",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "Note taking application",
   "homepage": "https://giganotes.com",
   "author": {
-    "name": "FourthByte",
+    "name": "Giganotes",
     "email": "4thbyte@gmail.com"
   },
   "keywords": [

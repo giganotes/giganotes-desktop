@@ -13,6 +13,12 @@ if (!serve) {
     Menu.setApplicationMenu(null);
 }
 
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  console.log('Another application instance is already running');
+  app.quit();
+}
 
 function createWindow(): BrowserWindow {
 

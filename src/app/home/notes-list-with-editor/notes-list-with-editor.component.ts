@@ -58,7 +58,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   isSyncOnInitDone = false;
   isOffline = false;
   isEditorScriptLoaded = false;
-  isSelectedNoteLoaded = false;
+  isEditorContentLoaded = false;
   public searchFilter: string;
   notes = Array<Note>();
   selectedNote: Note = {
@@ -102,9 +102,9 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   folderId: string;
   noteId: string;
 
-  prevMode: string;
-  prevFolderId: string;
-  prevNoteId: string;
+  prevMode: string = null;
+  prevFolderId: string = null;
+  prevNoteId: string = null;
 
   showFabButtons = false;
   fabTogglerState = 'inactive';
@@ -195,11 +195,12 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       // Clear search filter when opening a route
       this.searchFilter = '';
 
-      this.prevMode = this.mode;
-      this.prevFolderId = this.folderId;
-      this.prevNoteId = this.noteId;
-
       parent.saveCurrentNote().then(() => {
+
+        this.prevMode = this.mode;
+        this.prevFolderId = this.folderId;
+        this.prevNoteId = this.noteId;
+
         switch (params.mode) {
           case "all":
             this.mode = "all";
@@ -222,11 +223,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
         if (this.screenService.isMobile) {
           this.showMobileList = this.noteId == null;
           this.mobileShowBackButton = !this.showMobileList;
-        }
-
-        // If we are in note editing mode, flush note load status flag
-        if (this.noteId != null) {
-          this.isSelectedNoteLoaded = false;
         }
 
         this.loadData();
@@ -265,6 +261,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     if (this.isOffline) {
       return;
     }
+    await this.saveCurrentNote();
     await this.syncService.doSync();
 
     // We should reload menu items and list items after sync
@@ -298,25 +295,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     private electronService: ElectronService,
     private dynamicScriptLoaderService: DynamicScriptLoaderService,
     private router: Router,
-    private dialog: MatDialog
-  ) {
-
-    if (this.screenService.isMobile) {
- /*     // To get swipeable sidebar
-      const hammertime = new Hammer(elementRef.nativeElement, {});
-      hammertime.get('pan').set({direction: Hammer.DIRECTION_ALL});
-
-      hammertime.on('panright', (ev) => {
-          this.sidenav.open();
-      });
-     hammertime.on('panleft', (ev) => {
-          this.sidenav.close();
-     });
-
-      hammertime.on('panup', (ev) => false);
-      hammertime.on('pandown', (ev) => false);
-      */
-    }
+    private dialog: MatDialog) {
   }
 
   async loadListItems() {
@@ -448,7 +427,6 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
   async loadSelectedNoteById(id: string) {
     this.selectedNote = await this.noteService.loadNoteById(id);
-    this.isSelectedNoteLoaded = true;
     this.selectedNoteInfo = this.selectedNote;
   }
 
@@ -534,7 +512,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   }
 
   async saveCurrentNote() {
-    if (this.selectedNoteInfo.id.length == 0) {
+    if (this.selectedNoteInfo.id.length == 0 || !this.isEditorContentLoaded) {
       return;
     }
 
@@ -603,6 +581,10 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
 
   onNoteTitleKeyUp(event) {
     this.selectedNoteInfo.title = this.selectedNote.title;
+  }
+
+  handleOnLoadContent(event) {
+    this.isEditorContentLoaded = true;
   }
 
   searchNotesKeyUp(event) {

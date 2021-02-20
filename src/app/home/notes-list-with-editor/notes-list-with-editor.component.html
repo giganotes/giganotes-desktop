@@ -148,6 +148,7 @@
               style="height:100%; width:100%"
               [(ngModel)]="selectedNote.text"
               (onDblclick)="handleEditorClick($event)"
+              (onSetContent)="handleOnLoadContent($event)"
             >
             </editor>
           </div>
@@ -289,12 +290,13 @@
         (focusout)="onNoteNameInputFocusOut()"
       />
       <editor
-        *ngIf="isEditorScriptLoaded && isSelectedNoteLoaded"
+        *ngIf="isEditorScriptLoaded && !showMobileList"
         [init]="editorSetup"
         fxLayout="column"
         style="height:100%; width:100%"
         [(ngModel)]="selectedNote.text"
         (onClick)="handleEditorClick($event)"
+        (onSetContent)="handleOnLoadContent($event)"
       >
       </editor>
       </div>
