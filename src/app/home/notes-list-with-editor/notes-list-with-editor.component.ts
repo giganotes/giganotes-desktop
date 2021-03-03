@@ -5,7 +5,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, 
 import { MatIconRegistry } from "@angular/material/icon";
 import { MatInput } from "@angular/material/input";
 import { DomSanitizer } from "@angular/platform-browser";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute, Params, Router } from "@angular/router";
 import { NoteManagerService } from '../../services/note-manager-service';
 import { Note } from "../../model/note";
 import { Folder } from "../../model/folder";
@@ -29,18 +29,34 @@ import { DynamicScriptLoaderService } from '../../services/dynamic-script-loader
 import { ScreenChangedEvent } from '../../model/events/screen-changed';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { from, Subscription } from 'rxjs';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger
+} from '@angular/animations';
 
 @Component({
   selector: "app-notes-list-with-editor",
   templateUrl: "./notes-list-with-editor.component.html",
   styleUrls: ["./notes-list-with-editor.component.scss"],
-  host: { style: "height:100%; display: flex; flex-direction:column" }
+  host: { style: "height:100%; display: flex; flex-direction:column" },
+  animations: [
+    trigger('slideInOut', [
+      state('true', style({ width: '*' })),
+      state('false', style({ width: '0' })),
+      transition('true => false', animate('300ms ease-in')),
+      transition('false => true', animate('300ms ease-out'))
+    ])
+  ],
 })
 export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   @ViewChild(NavigationTreeComponent) navigationTree: NavigationTreeComponent;
   @ViewChild(MatSidenav) sidenav: MatSidenav;
   @ViewChild('fileInput') fileInput: ElementRef;
+  @ViewChild('inputSearch') inputSearch: ElementRef;
 
   INTERNAL_LINK_PREFIX = "local:";
 
@@ -56,6 +72,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   navTreeEventsService = new NavTreeEventsService();
   isNavMenuLoaded = false;
   isSyncOnInitDone = false;
+  searchVisible = false;
   isOffline = false;
   isEditorScriptLoaded = false;
   isEditorContentLoaded = false;
@@ -110,6 +127,16 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
   fabTogglerState = 'inactive';
 
   isReadOnly = true;
+
+
+  public closeSearch(): void {
+    this.searchVisible = false;
+  }
+
+  public openSearch(): void {
+    this.searchVisible = true;
+    this.inputSearch.nativeElement.focus();
+  }
 
   showFabItems() {
     this.fabTogglerState = 'active';
@@ -195,43 +222,52 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       // Clear search filter when opening a route
       this.searchFilter = '';
 
-      parent.saveCurrentNote().then(() => {
-
-        this.prevMode = this.mode;
-        this.prevFolderId = this.folderId;
-        this.prevNoteId = this.noteId;
-
-        switch (params.mode) {
-          case "all":
-            this.mode = "all";
-            this.noteId = params.noteId;
-            break;
-          case "fav":
-            this.mode = "fav";
-            this.noteId = params.noteId;
-            break;
-          case "folder":
-            this.mode = "folder";
-            this.folderId = params.folderId;
-            this.noteId = params.noteId;
-            break;
-          default:
-            this.mode = "all";
-            this.noteId = null;
-        }
-
-        if (this.screenService.isMobile) {
-          this.showMobileList = this.noteId == null;
-          this.mobileShowBackButton = !this.showMobileList;
-        }
-
-        this.loadData();
-      });
+      // Auto-save is not currently available in mobile mode
+      if (this.screenService.isMobile) {
+        this.startLoad(params);
+      }
+      else {
+        parent.saveCurrentNote().then(() => {
+          this.startLoad(params);
+        });
+      }
     });
 
     if (this.screenService.isMobile) {
       document.addEventListener('backbutton', this.onBack.bind(this), false);
     }
+  }
+
+  startLoad(params: Params): void {
+    this.prevMode = this.mode;
+    this.prevFolderId = this.folderId;
+    this.prevNoteId = this.noteId;
+
+    switch (params.mode) {
+      case "all":
+        this.mode = "all";
+        this.noteId = params.noteId;
+        break;
+      case "fav":
+        this.mode = "fav";
+        this.noteId = params.noteId;
+        break;
+      case "folder":
+        this.mode = "folder";
+        this.folderId = params.folderId;
+        this.noteId = params.noteId;
+        break;
+      default:
+        this.mode = "all";
+        this.noteId = null;
+    }
+
+    if (this.screenService.isMobile) {
+      this.showMobileList = this.noteId == null;
+      this.mobileShowBackButton = !this.showMobileList;
+    }
+
+    this.loadData();
   }
 
   ngAfterViewChecked() {
@@ -296,6 +332,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     private dynamicScriptLoaderService: DynamicScriptLoaderService,
     private router: Router,
     private dialog: MatDialog) {
+      iconRegistry.addSvgIcon('note-icon', sanitizer.bypassSecurityTrustResourceUrl('assets/icon-58x64.svg'));
   }
 
   async loadListItems() {
@@ -591,12 +628,20 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     this.searchNotes();
   }
 
+  onSearchMobile() {
+    this.doSearchNotes(this.searchFilter);
+  }
+
   searchNotes() {
+    this.doSearchNotes(this.searchFilter);
+  }
+
+  doSearchNotes(filter: string) {
     if (this.searchSubscription) {
       this.searchSubscription.unsubscribe();
     }
 
-    if (this.searchFilter.length == 0) {
+    if (filter.length == 0) {
       this.loadListItems();
       return;
     }
@@ -604,9 +649,9 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     let observable;
 
     if (this.mode === 'all') {
-      observable = from(this.noteService.searchNotes(this.searchFilter, null));
+      observable = from(this.noteService.searchNotes(filter, null));
     } else {
-      observable = from(this.noteService.searchNotes(this.searchFilter, this.currentFolder.id));
+      observable = from(this.noteService.searchNotes(filter, this.currentFolder.id));
     }
 
     this.searchSubscription = from(observable).subscribe((notes : Array<Note>)  => {

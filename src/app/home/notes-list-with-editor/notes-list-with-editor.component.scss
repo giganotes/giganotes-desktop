@@ -104,3 +104,64 @@
   input.mat-input-element {
     margin-left: 3px;
   }
+
+  .toolbar-content-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .mat-search_icons {
+    display: block;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .mat-search_icon-close,
+  .mat-search_icon-search {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    top: 2px;
+    left: 0;
+    z-index: 2;
+    border-radius: 50%;
+  }
+  .mat-search_icon-close,
+  .mat-search_icons--active .mat-search_icon-search {
+    opacity: 0;
+    transform: rotate(225deg);
+  }
+  .mat-search_icons--active .mat-search_icon-close {
+    opacity: 1;
+    z-index: 3;
+    visibility: visible;
+    transform: rotate(360deg);
+  }
+
+  .mat-search_field {
+    z-index: 1;
+    width:100%;
+  }
+
+  .icon-wrapper {
+    position: relative;
+    width: 24px;
+    height: 24px;
+  }
+
+  .note-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  box-sizing: content-box;
+  border-radius: 50%;
+  padding: 4px;
+}

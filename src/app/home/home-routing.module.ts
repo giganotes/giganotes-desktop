@@ -32,7 +32,6 @@ import {MatTreeModule} from '@angular/material/tree';
 
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
-
 const homeRoutes: Routes = [
       {
         path: '',

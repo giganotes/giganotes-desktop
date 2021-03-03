@@ -95,7 +95,7 @@
                   [class.list-item-selected]="this.selectedNoteInfo.id == note.id"
                   mwlDraggable [dropData]="note.id" [showOriginalElementWhileDragging]="true"
                 >
-                  <mat-icon matListIcon class="avatar">description</mat-icon>
+                  <mat-icon svgIcon="note-icon" class="note-icon"></mat-icon>
                   <span *ngIf="note.title.length > 0">{{ note.title }}</span>
                   <span *ngIf="note.title.length == 0">Untitled note</span>
                 </mat-list-item>
@@ -178,55 +178,76 @@
       >
         <mat-icon>menu</mat-icon>
       </button>
-      <span>{{ getMobileTitle() }}</span>
-      <span fxFlex></span>
+      <span *ngIf="!searchVisible">{{ getMobileTitle() }}</span>
+      <div class="toolbar-content-right">
 
-      <button mat-icon-button (click)="doSync()" *ngIf="!mobileShowBackButton && !authService.isOffline">
-        <mat-icon [ngClass]="{'fa-spin': isSyncing()}">sync</mat-icon>
-      </button>
+        <mat-form-field *ngIf="!mobileShowBackButton" class="mat-search_field" [@slideInOut]="searchVisible">
+        <input
+          #inputSearch
+          matInput
+          type="text"
+          [(ngModel)]="searchFilter"
+          [placeholder]="placeholder"
+          (keyup.enter)="onSearchMobile()"
+          autocapitalize="none"
+        />
+      </mat-form-field>
 
-      <button
-        *ngIf="mobileShowBackButton && mode != 'fav'"
+      <div class="icon-wrapper" *ngIf="!mobileShowBackButton" [class.mat-search_icons--active]="searchVisible">
+          <mat-icon class="mat-search_icon-close" (click)="closeSearch()" matRipple>
+            close
+          </mat-icon>
+          <mat-icon class="mat-search_icon-search" (click)="openSearch()" matRipple>
+            search
+          </mat-icon>
+      </div>
+
+        <button mat-icon-button (click)="doSync()" *ngIf="!mobileShowBackButton && !authService.isOffline">
+          <mat-icon [ngClass]="{'fa-spin': isSyncing()}">sync</mat-icon>
+        </button>
+
+        <button
+          *ngIf="mobileShowBackButton && mode != 'fav'"
+          mat-icon-button
+          (click)="onAddToFavorites()"
+        >
+          <mat-icon>favorite</mat-icon>
+        </button>
+
+        <button
+          *ngIf="mobileShowBackButton"
+          type="button"
+          (click)="onDeleteNote()"
+          mat-icon-button
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+
+        <button
+          *ngIf="mobileShowBackButton"
+          type="button"
+          (click)="onSaveNoteMobile()"
+          mat-icon-button
+        >
+          <mat-icon>check</mat-icon>
+        </button>
+
+        <button
+        *ngIf="mobileShowBackButton && folderOfSelectedNote != null"
+        (click)="onChangeFolder()"
         mat-icon-button
-        (click)="onAddToFavorites()"
-      >
-        <mat-icon>favorite</mat-icon>
-      </button>
+        >
+        <mat-icon>folder</mat-icon>
+        </button>
 
-      <button
+        <button
         *ngIf="mobileShowBackButton"
-        type="button"
-        (click)="onDeleteNote()"
+        (click)="addImage()"
         mat-icon-button
-      >
-        <mat-icon>delete</mat-icon>
-      </button>
-
-      <button
-        *ngIf="mobileShowBackButton"
-        type="button"
-        (click)="onSaveNoteMobile()"
-        mat-icon-button
-      >
-        <mat-icon>check</mat-icon>
-      </button>
-
-      <button
-      *ngIf="mobileShowBackButton && folderOfSelectedNote != null"
-      (click)="onChangeFolder()"
-      mat-icon-button
-      >
-      <mat-icon>folder</mat-icon>
-      </button>
-
-      <button
-      *ngIf="mobileShowBackButton"
-      (click)="addImage()"
-      mat-icon-button
-      >
-      <mat-icon>add_a_photo</mat-icon>
-      </button>
-
+        >
+        <mat-icon>add_a_photo</mat-icon>
+        </button>
+      </div>
     </mat-toolbar-row>
   </mat-toolbar>
 
