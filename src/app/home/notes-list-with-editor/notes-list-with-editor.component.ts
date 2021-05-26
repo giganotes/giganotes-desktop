@@ -188,6 +188,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
         { text: "C++", value: "cpp" }
       ],
       paste_data_images: true,
+      forced_root_block : false,
       height: '100%',
       width:'100%',
       setup: editor => {
@@ -297,7 +298,11 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     if (this.isOffline) {
       return;
     }
-    await this.saveCurrentNote();
+
+    if (!this.screenService.isMobile) {
+      await this.saveCurrentNote();
+    }
+
     await this.syncService.doSync();
 
     // We should reload menu items and list items after sync
@@ -659,6 +664,7 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
       if (this.notes.length > 0) {
         this.selectFirstNote();
       } else {
+        this.selectedNote.id = '';
         this.selectedNote.title = '';
         this.selectedNote.text = '';
       }
@@ -676,6 +682,12 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
         this.electronService.openInExternalBrowser(hrefValue);
         event.event.preventDefault();
       }
+    }
+
+    if (element.tagName.toUpperCase() == "IMG") {
+        // Extract BLOB from SRC property
+        // Save blob to temporary image file
+        // Open the image file in default program
     }
   }
 

@@ -113,7 +113,6 @@
                 placeholder="Enter note title"
                 [(ngModel)]="selectedNote.title"
                 (keyup)="onNoteTitleKeyUp($event)"
-                (focusout)="onNoteNameInputFocusOut()"
               />
 
               <button mat-icon-button (click)="onSaveNote()">
@@ -308,7 +307,6 @@
         placeholder="Enter note title"
         [(ngModel)]="selectedNote.title"
         (keyup)="onNoteTitleKeyUp($event)"
-        (focusout)="onNoteNameInputFocusOut()"
       />
       <editor
         *ngIf="isEditorScriptLoaded && !showMobileList"
