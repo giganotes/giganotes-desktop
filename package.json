@@ -1,6 +1,6 @@
 {
   "name": "giganotes",
-  "version": "2.0.12",
+  "version": "2.1.0",
   "description": "Note taking application",
   "homepage": "https://giganotes.com",
   "author": {
@@ -36,7 +36,8 @@
     "rebuild-core": "electron-build-env neon build giganotes-core-js --release"
   },
   "dependencies": {
-    "giganotes-core-js": "file:../giganotes-core-js"
+    "giganotes-core-js": "file:../giganotes-core-js",
+    "mime-types": "^2.1.30"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "10.0.1",

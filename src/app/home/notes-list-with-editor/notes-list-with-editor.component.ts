@@ -685,9 +685,18 @@ export class NotesListWithEditorComponent implements OnInit, OnDestroy, AfterVie
     }
 
     if (element.tagName.toUpperCase() == "IMG") {
-        // Extract BLOB from SRC property
-        // Save blob to temporary image file
-        // Open the image file in default program
+      var parent = this;
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', element.src, true);
+      xhr.responseType = 'blob';
+      xhr.onload = function(e) {
+        if (this.status == 200) {
+            parent.electronService.saveBlobToTemporaryFile(this.response).then(path => {
+            parent.electronService.openFile(path);
+          })
+        }
+      };
+      xhr.send();
     }
   }
 

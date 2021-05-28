@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.initIpc = void 0;
 var electron_1 = require("electron");
 var core = require("giganotes-core-js");
+var fs_1 = require("fs");
 function initIpc() {
     initAuthServiceIpc();
     var emitter = new core.MyEventEmitter();
@@ -12,6 +13,16 @@ function initIpc() {
     electron_1.ipcMain.on('init-core-request', function (event, arg) {
         core.initData(arg['apiPath'], arg['dataPath']);
         event.sender.send('init-core-reply', {});
+    });
+    electron_1.ipcMain.on('save-file-request', function (event, arg) {
+        fs_1.writeFile(arg['fileName'], arg['data'], function (err) {
+            if (err) {
+                event.sender.send('save-file-reply', { success: false, error: err.message });
+            }
+            else {
+                event.sender.send('save-file-reply', { success: true });
+            }
+        });
     });
 }
 exports.initIpc = initIpc;

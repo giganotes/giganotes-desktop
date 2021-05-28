@@ -1,5 +1,6 @@
 import { ipcMain, ipcRenderer } from 'electron';
 import * as core from 'giganotes-core-js';
+import { writeFile } from 'fs';
 
 export function initIpc() {
   initAuthServiceIpc();
@@ -14,6 +15,16 @@ export function initIpc() {
   ipcMain.on('init-core-request', (event, arg) => {
     core.initData(arg['apiPath'], arg['dataPath']);
     event.sender.send('init-core-reply', {});
+  });
+
+  ipcMain.on('save-file-request', (event, arg) => {
+    writeFile(arg['fileName'], arg['data'], (err) => {
+      if (err) {
+        event.sender.send('save-file-reply', {success : false, error: err.message})
+      } else {
+        event.sender.send('save-file-reply', {success : true})
+      }
+    });
   });
 }
 
